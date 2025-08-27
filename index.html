@@ -45,21 +45,39 @@
                     <h2>Your Tasks</h2>
                 </div>
                 
-                <!-- Container where all tasks will be displayed -->
+                <!-- Container where active tasks will be displayed -->
                 <!-- This will be populated by JavaScript -->
                 <ul class="tasks-list" id="tasksList">
-                    <!-- Tasks will be dynamically added here -->
+                    <!-- Active tasks will be dynamically added here -->
                 </ul>
                 
-                <!-- Message shown when no tasks exist -->
+                <!-- Message shown when no active tasks exist -->
                 <div class="empty-state" id="emptyState">
                     <p>No tasks yet. Add one above to get started!</p>
                 </div>
-                
-                <!-- Clear all button at the bottom (only show when there are tasks) -->
-                <div class="clear-all-section" id="clearAllSection">
-                    <button class="clear-all-button" id="clearAllButton">Clear All Tasks</button>
+            </section>
+
+            <!-- Section for completed tasks -->
+            <section class="completed-tasks-section" id="completedTasksSection">
+                <!-- Header for completed tasks -->
+                <div class="completed-tasks-header">
+                    <h2>Completed Tasks</h2>
                 </div>
+                
+                <!-- Container where completed tasks will be displayed -->
+                <ul class="completed-tasks-list" id="completedTasksList">
+                    <!-- Completed tasks will be dynamically added here -->
+                </ul>
+                
+                <!-- Message shown when no completed tasks exist -->
+                <div class="completed-empty-state" id="completedEmptyState">
+                    <p>No completed tasks yet. Complete some tasks to see them here!</p>
+                </div>
+            </section>
+
+            <!-- Clear all button section moved outside of tasks section -->
+            <section class="clear-all-section" id="clearAllSection">
+                <button class="clear-all-button" id="clearAllButton">Clear All Tasks</button>
             </section>
         </main>
     </div>

@@ -10,6 +10,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const tasksList = document.getElementById('tasksList');
     const emptyState = document.getElementById('emptyState');
     const tasksHeader = document.getElementById('tasksHeader');
+    const completedTasksSection = document.getElementById('completedTasksSection');
+    const completedTasksList = document.getElementById('completedTasksList');
+    const completedEmptyState = document.getElementById('completedEmptyState');
     const clearAllSection = document.getElementById('clearAllSection');
     const clearAllButton = document.getElementById('clearAllButton');
     
@@ -37,8 +40,9 @@ document.addEventListener('DOMContentLoaded', function() {
         // Listen for form submission (when user adds a new task)
         addTaskForm.addEventListener('submit', handleAddTask);
         
-        // Listen for clicks on the tasks list (for checkboxes and delete buttons)
+        // Listen for clicks on both task lists (for checkboxes and delete buttons)
         tasksList.addEventListener('click', handleTaskListClick);
+        completedTasksList.addEventListener('click', handleTaskListClick);
         
         // Listen for clear all button clicks
         clearAllButton.addEventListener('click', handleClearAllTasks);
@@ -83,8 +87,8 @@ document.addEventListener('DOMContentLoaded', function() {
         // Get the clicked element
         const clickedElement = event.target;
         
-        // Find the parent task item element
-        const taskItem = clickedElement.closest('.task-item');
+        // Find the parent task item element (could be active or completed)
+        const taskItem = clickedElement.closest('.task-item, .completed-task-item');
         
         // If we can't find a task item, ignore the click
         if (!taskItem) return;
@@ -150,41 +154,64 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Update the display to show all current tasks
     function renderTasks() {
-        // Clear the current display
+        // Clear both task lists
         tasksList.innerHTML = '';
+        completedTasksList.innerHTML = '';
         
-        // If there are no tasks, show the empty state message and hide the header/clear section
-        if (tasks.length === 0) {
+        // Separate active and completed tasks
+        const activeTasks = tasks.filter(task => !task.completed);
+        const completedTasks = tasks.filter(task => task.completed);
+        
+        // Handle active tasks section
+        if (activeTasks.length === 0) {
             emptyState.classList.remove('hidden');
             tasksHeader.classList.add('hidden');
-            clearAllSection.classList.add('hidden');
-            return;
+        } else {
+            emptyState.classList.add('hidden');
+            tasksHeader.classList.remove('hidden');
+            
+            // Create HTML elements for each active task
+            activeTasks.forEach(task => {
+                const taskElement = createTaskElement(task);
+                tasksList.appendChild(taskElement);
+            });
         }
         
-        // Hide the empty state message and show the header/clear section since we have tasks
-        emptyState.classList.add('hidden');
-        tasksHeader.classList.remove('hidden');
-        clearAllSection.classList.remove('hidden');
+        // Handle completed tasks section
+        if (completedTasks.length === 0) {
+            completedEmptyState.classList.remove('hidden');
+            completedTasksSection.classList.add('hidden');
+        } else {
+            completedEmptyState.classList.add('hidden');
+            completedTasksSection.classList.remove('hidden');
+            
+            // Create HTML elements for each completed task
+            completedTasks.forEach(task => {
+                const taskElement = createCompletedTaskElement(task);
+                completedTasksList.appendChild(taskElement);
+            });
+        }
         
-        // Create HTML elements for each task
-        tasks.forEach(task => {
-            const taskElement = createTaskElement(task);
-            tasksList.appendChild(taskElement);
-        });
+        // Show clear all button if there are any tasks (active or completed)
+        if (tasks.length === 0) {
+            clearAllSection.classList.add('hidden');
+        } else {
+            clearAllSection.classList.remove('hidden');
+        }
     }
     
-    // Create the HTML element for a single task
+    // Create the HTML element for an active task
     function createTaskElement(task) {
         // Create the main list item element
         const li = document.createElement('li');
-        li.className = `task-item ${task.completed ? 'completed' : ''}`;
+        li.className = 'task-item'; // No completed class since these are active tasks
         li.dataset.taskId = task.id; // Store the task ID for later reference
         
         // Create the checkbox
         const checkbox = document.createElement('input');
         checkbox.type = 'checkbox';
         checkbox.className = 'task-checkbox';
-        checkbox.checked = task.completed;
+        checkbox.checked = false; // Active tasks are always unchecked
         
         // Create the text span
         const textSpan = document.createElement('span');
@@ -196,6 +223,39 @@ document.addEventListener('DOMContentLoaded', function() {
         deleteButton.className = 'delete-button';
         deleteButton.innerHTML = '🗑️'; // Trashcan emoji icon
         deleteButton.setAttribute('aria-label', `Delete task: ${task.text}`);
+        deleteButton.setAttribute('title', 'Delete task'); // Tooltip on hover
+        
+        // Assemble all the pieces
+        li.appendChild(checkbox);
+        li.appendChild(textSpan);
+        li.appendChild(deleteButton);
+        
+        return li;
+    }
+    
+    // Create the HTML element for a completed task
+    function createCompletedTaskElement(task) {
+        // Create the main list item element
+        const li = document.createElement('li');
+        li.className = 'completed-task-item';
+        li.dataset.taskId = task.id; // Store the task ID for later reference
+        
+        // Create the checkbox (checked and disabled to show it's completed)
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.className = 'task-checkbox';
+        checkbox.checked = true;
+        
+        // Create the text span
+        const textSpan = document.createElement('span');
+        textSpan.className = 'task-text';
+        textSpan.textContent = task.text;
+        
+        // Create the delete button with trashcan icon
+        const deleteButton = document.createElement('button');
+        deleteButton.className = 'delete-button';
+        deleteButton.innerHTML = '🗑️'; // Trashcan emoji icon
+        deleteButton.setAttribute('aria-label', `Delete completed task: ${task.text}`);
         deleteButton.setAttribute('title', 'Delete task'); // Tooltip on hover
         
         // Assemble all the pieces
