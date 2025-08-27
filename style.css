@@ -27,7 +27,7 @@ body {
 
 /* Header styling */
 .app-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); /* Purple gradient */
+    background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%); /* Light blue gradient */
     color: white;
     padding: 2rem 1.5rem;
     text-align: center;
@@ -73,8 +73,8 @@ body {
 
 .task-input:focus {
     outline: none; /* Remove default browser outline */
-    border-color: #667eea; /* Purple border when focused */
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1); /* Subtle glow effect */
+    border-color: #3b82f6; /* Light blue border when focused */
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); /* Subtle glow effect */
 }
 
 .task-input::placeholder {
@@ -84,7 +84,7 @@ body {
 /* Add button styling */
 .add-button {
     padding: 0.875rem 1.5rem;
-    background: #667eea;
+    background: #3b82f6;
     color: white;
     border: none;
     border-radius: 8px;
@@ -95,7 +95,7 @@ body {
 }
 
 .add-button:hover {
-    background: #5a67d8; /* Darker purple on hover */
+    background: #2563eb; /* Darker blue on hover */
 }
 
 .add-button:active {
@@ -174,8 +174,8 @@ body {
 
 /* Completed task styling */
 .task-item.completed {
-    background: #f0fdf4; /* Light green background */
-    border-color: #bbf7d0;
+    background: #eff6ff; /* Light blue background */
+    border-color: #bfdbfe;
 }
 
 .task-item.completed .task-text {
@@ -189,7 +189,7 @@ body {
     height: 20px;
     border-radius: 4px;
     cursor: pointer;
-    accent-color: #667eea; /* Purple checkboxes */
+    accent-color: #3b82f6; /* Light blue checkboxes */
 }
 
 /* Task text styling */
