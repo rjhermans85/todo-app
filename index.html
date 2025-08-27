@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Basic HTML5 document structure -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple ToDo App</title>
+    
+    <!-- Link to our CSS file for styling -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Main container for the entire app -->
+    <div class="app-container">
+        <!-- App header with title -->
+        <header class="app-header">
+            <h1>My Tasks</h1>
+            <p class="app-subtitle">Quick and simple task management</p>
+        </header>
+
+        <!-- Main content area -->
+        <main class="main-content">
+            <!-- Section for adding new tasks -->
+            <section class="add-task-section">
+                <!-- Input form for new tasks -->
+                <form class="add-task-form" id="addTaskForm">
+                    <!-- Text input where user types new tasks -->
+                    <input 
+                        type="text" 
+                        id="taskInput" 
+                        class="task-input" 
+                        placeholder="Add a new task..." 
+                        required
+                        autocomplete="off"
+                    >
+                    <!-- Button to submit new tasks -->
+                    <button type="submit" class="add-button">Add Task</button>
+                </form>
+            </section>
+
+            <!-- Section to display the list of tasks -->
+            <section class="tasks-section">
+                <!-- Header for tasks -->
+                <div class="tasks-header" id="tasksHeader">
+                    <h2>Your Tasks</h2>
+                </div>
+                
+                <!-- Container where all tasks will be displayed -->
+                <!-- This will be populated by JavaScript -->
+                <ul class="tasks-list" id="tasksList">
+                    <!-- Tasks will be dynamically added here -->
+                </ul>
+                
+                <!-- Message shown when no tasks exist -->
+                <div class="empty-state" id="emptyState">
+                    <p>No tasks yet. Add one above to get started!</p>
+                </div>
+                
+                <!-- Clear all button at the bottom (only show when there are tasks) -->
+                <div class="clear-all-section" id="clearAllSection">
+                    <button class="clear-all-button" id="clearAllButton">Clear All Tasks</button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Link to our JavaScript file for functionality -->
+    <script src="script.js"></script>
+</body>
+</html>
