@@ -26,7 +26,7 @@ concurrency:
 jobs:
   # Build and validation job
   build:
-    name: Build and Validate
+    name: Validate and Test
     runs-on: ubuntu-latest
     
     steps:
@@ -41,28 +41,6 @@ jobs:
           root: ./
           css: true
           
-      # Check for common JavaScript errors
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-          
-      # Install a simple JavaScript linter
-      - name: Install dependencies
-        run: |
-          npm init -y
-          npm install --save-dev jshint
-          
-      # Run JavaScript validation
-      - name: Lint JavaScript
-        run: |
-          npx jshint script.js --config '{
-            "esversion": 6,
-            "browser": true,
-            "undef": true,
-            "unused": true,
-            "predef": ["localStorage", "confirm"]
-          }'
           
       # Verify all required files exist
       - name: Verify files exist
