@@ -255,6 +255,37 @@ body {
     line-height: 1.4;
 }
 
+/* Edit button styling */
+.edit-button {
+    background: white;
+    color: #6b7280; /* Gray color */
+    border: 1px solid #d1d5db; /* Light gray outline */
+    border-radius: 6px;
+    padding: 0.5rem;
+    font-size: 1.125rem; /* Larger for icon */
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); /* Subtle shadow for depth */
+}
+
+.edit-button:hover {
+    background: #f0f9ff; /* Light blue background on hover */
+    border-color: #93c5fd; /* Light blue border on hover */
+    color: #3b82f6; /* Blue color on hover to indicate edit */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Slightly stronger shadow */
+    transform: translateY(-1px); /* Slight lift effect */
+}
+
+.edit-button:active {
+    transform: translateY(0); /* Return to original position when pressed */
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); /* Original shadow when pressed */
+}
+
 /* Delete button styling */
 .delete-button {
     background: white;
@@ -284,6 +315,83 @@ body {
 .delete-button:active {
     transform: translateY(0); /* Return to original position when pressed */
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); /* Original shadow when pressed */
+}
+
+/* Edit input styling */
+.edit-input {
+    flex: 1;
+    padding: 0.5rem 0.75rem;
+    border: 2px solid #3b82f6; /* Blue border to indicate edit mode */
+    border-radius: 6px;
+    font-size: 1rem;
+    background: #f8fafc; /* Light background */
+    transition: border-color 0.2s ease;
+}
+
+.edit-input:focus {
+    outline: none;
+    border-color: #2563eb; /* Darker blue when focused */
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); /* Subtle glow */
+}
+
+/* Save edit button styling */
+.save-edit-button {
+    background: white;
+    color: #6b7280; /* Gray color like other buttons */
+    border: 1px solid #d1d5db; /* Light gray outline */
+    border-radius: 6px;
+    padding: 0.5rem;
+    font-size: 1.125rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.save-edit-button:hover {
+    background: #f9fafb; /* Light gray background on hover */
+    border-color: #9ca3af; /* Darker gray border on hover */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
+}
+
+.save-edit-button:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+/* Cancel edit button styling */
+.cancel-edit-button {
+    background: white;
+    color: #6b7280; /* Gray color like other buttons */
+    border: 1px solid #d1d5db; /* Light gray outline */
+    border-radius: 6px;
+    padding: 0.5rem;
+    font-size: 1.125rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.cancel-edit-button:hover {
+    background: #f9fafb; /* Light gray background on hover */
+    border-color: #9ca3af; /* Darker gray border on hover */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
+}
+
+.cancel-edit-button:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 /* Empty state styling */

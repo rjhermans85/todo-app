@@ -100,9 +100,18 @@ document.addEventListener('DOMContentLoaded', function() {
         if (clickedElement.classList.contains('task-checkbox')) {
             // User clicked the checkbox - toggle completion status
             toggleTaskCompletion(taskId);
+        } else if (clickedElement.classList.contains('edit-button')) {
+            // User clicked the edit button - enter edit mode
+            enterEditMode(taskItem, taskId);
         } else if (clickedElement.classList.contains('delete-button')) {
             // User clicked the delete button - remove the task
             deleteTask(taskId);
+        } else if (clickedElement.classList.contains('save-edit-button')) {
+            // User clicked save - save the edit
+            saveTaskEdit(taskItem, taskId);
+        } else if (clickedElement.classList.contains('cancel-edit-button')) {
+            // User clicked cancel - cancel the edit
+            cancelTaskEdit(taskItem, taskId);
         }
     }
     
@@ -218,6 +227,13 @@ document.addEventListener('DOMContentLoaded', function() {
         textSpan.className = 'task-text';
         textSpan.textContent = task.text;
         
+        // Create the edit button with pencil icon
+        const editButton = document.createElement('button');
+        editButton.className = 'edit-button';
+        editButton.innerHTML = '✏️'; // Pencil emoji icon
+        editButton.setAttribute('aria-label', `Edit task: ${task.text}`);
+        editButton.setAttribute('title', 'Edit task'); // Tooltip on hover
+        
         // Create the delete button with trashcan icon
         const deleteButton = document.createElement('button');
         deleteButton.className = 'delete-button';
@@ -228,6 +244,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Assemble all the pieces
         li.appendChild(checkbox);
         li.appendChild(textSpan);
+        li.appendChild(editButton);
         li.appendChild(deleteButton);
         
         return li;
@@ -299,6 +316,93 @@ document.addEventListener('DOMContentLoaded', function() {
         // Simple method: use current timestamp + random integer
         // This is sufficient for our single-user PoC
         return Date.now() + Math.floor(Math.random() * 1000);
+    }
+    
+    // Enter edit mode for a task
+    function enterEditMode(taskItem, taskId) {
+        // Find the task in our array
+        const task = tasks.find(t => t.id === taskId);
+        if (!task) return;
+        
+        // Get the text span and hide it
+        const textSpan = taskItem.querySelector('.task-text');
+        const editButton = taskItem.querySelector('.edit-button');
+        const deleteButton = taskItem.querySelector('.delete-button');
+        
+        // Hide the original text and buttons
+        textSpan.style.display = 'none';
+        editButton.style.display = 'none';
+        deleteButton.style.display = 'none';
+        
+        // Create the edit input
+        const editInput = document.createElement('input');
+        editInput.type = 'text';
+        editInput.className = 'edit-input';
+        editInput.value = task.text;
+        
+        // Create save button
+        const saveButton = document.createElement('button');
+        saveButton.className = 'save-edit-button';
+        saveButton.innerHTML = '✅'; // Checkmark emoji
+        saveButton.setAttribute('title', 'Save changes');
+        
+        // Create cancel button
+        const cancelButton = document.createElement('button');
+        cancelButton.className = 'cancel-edit-button';
+        cancelButton.innerHTML = '❌'; // X emoji
+        cancelButton.setAttribute('title', 'Cancel edit');
+        
+        // Insert the edit elements after the text span
+        textSpan.parentNode.insertBefore(editInput, editButton);
+        textSpan.parentNode.insertBefore(saveButton, editButton);
+        textSpan.parentNode.insertBefore(cancelButton, editButton);
+        
+        // Focus the input and select all text
+        editInput.focus();
+        editInput.select();
+        
+        // Add keyboard event listeners
+        editInput.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                saveTaskEdit(taskItem, taskId);
+            } else if (event.key === 'Escape') {
+                event.preventDefault();
+                cancelTaskEdit(taskItem, taskId);
+            }
+        });
+    }
+    
+    // Save the edited task
+    function saveTaskEdit(taskItem, taskId) {
+        // Get the edit input value
+        const editInput = taskItem.querySelector('.edit-input');
+        const newText = editInput.value.trim();
+        
+        // Don't save if the text is empty
+        if (!newText) {
+            // Focus back on the input
+            editInput.focus();
+            return;
+        }
+        
+        // Find the task and update its text
+        const task = tasks.find(t => t.id === taskId);
+        if (task) {
+            task.text = newText;
+            
+            // Save to localStorage
+            saveTasksToStorage();
+            
+            // Re-render the tasks to show the updated text
+            renderTasks();
+        }
+    }
+    
+    // Cancel the edit and return to view mode
+    function cancelTaskEdit(taskItem, taskId) {
+        // Simply re-render the tasks to reset the view
+        renderTasks();
     }
     
     // Optional: Add keyboard shortcuts for power users
