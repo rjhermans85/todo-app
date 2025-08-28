@@ -16,6 +16,28 @@ document.addEventListener('DOMContentLoaded', function() {
     const clearAllSection = document.getElementById('clearAllSection');
     const clearAllButton = document.getElementById('clearAllButton');
     
+    // Constants for CSS classes and other magic strings
+    const CSS_CLASSES = {
+        TASK_ITEM: 'task-item',
+        COMPLETED_TASK_ITEM: 'completed-task-item',
+        TASK_CHECKBOX: 'task-checkbox',
+        TASK_TEXT: 'task-text',
+        EDIT_BUTTON: 'edit-button',
+        DELETE_BUTTON: 'delete-button',
+        SAVE_EDIT_BUTTON: 'save-edit-button',
+        CANCEL_EDIT_BUTTON: 'cancel-edit-button',
+        EDIT_INPUT: 'edit-input'
+    };
+    
+    const ICONS = {
+        EDIT: '✏️',
+        DELETE: '🗑️',
+        SAVE: '✅',
+        CANCEL: '❌'
+    };
+    
+    const STORAGE_KEY = 'todoTasks';
+    
     // Array to store all our tasks in memory
     // Each task will be an object with: { id, text, completed }
     let tasks = [];
@@ -97,19 +119,19 @@ document.addEventListener('DOMContentLoaded', function() {
         const taskId = parseInt(taskItem.dataset.taskId);
         
         // Handle different types of clicks
-        if (clickedElement.classList.contains('task-checkbox')) {
+        if (clickedElement.classList.contains(CSS_CLASSES.TASK_CHECKBOX)) {
             // User clicked the checkbox - toggle completion status
             toggleTaskCompletion(taskId);
-        } else if (clickedElement.classList.contains('edit-button')) {
+        } else if (clickedElement.classList.contains(CSS_CLASSES.EDIT_BUTTON)) {
             // User clicked the edit button - enter edit mode
             enterEditMode(taskItem, taskId);
-        } else if (clickedElement.classList.contains('delete-button')) {
+        } else if (clickedElement.classList.contains(CSS_CLASSES.DELETE_BUTTON)) {
             // User clicked the delete button - remove the task
             deleteTask(taskId);
-        } else if (clickedElement.classList.contains('save-edit-button')) {
+        } else if (clickedElement.classList.contains(CSS_CLASSES.SAVE_EDIT_BUTTON)) {
             // User clicked save - save the edit
             saveTaskEdit(taskItem, taskId);
-        } else if (clickedElement.classList.contains('cancel-edit-button')) {
+        } else if (clickedElement.classList.contains(CSS_CLASSES.CANCEL_EDIT_BUTTON)) {
             // User clicked cancel - cancel the edit
             cancelTaskEdit(taskItem, taskId);
         }
@@ -154,7 +176,7 @@ document.addEventListener('DOMContentLoaded', function() {
             tasks = [];
             
             // Clear localStorage completely
-            localStorage.removeItem('todoTasks');
+            localStorage.removeItem(STORAGE_KEY);
             
             // Update the display
             renderTasks();
@@ -181,7 +203,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Create HTML elements for each active task
             activeTasks.forEach(task => {
-                const taskElement = createTaskElement(task);
+                const taskElement = createTaskElement(task, false);
                 tasksList.appendChild(taskElement);
             });
         }
@@ -196,7 +218,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Create HTML elements for each completed task
             completedTasks.forEach(task => {
-                const taskElement = createCompletedTaskElement(task);
+                const taskElement = createTaskElement(task, true);
                 completedTasksList.appendChild(taskElement);
             });
         }
@@ -209,75 +231,79 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Create the HTML element for an active task
-    function createTaskElement(task) {
-        // Create the main list item element
-        const li = document.createElement('li');
-        li.className = 'task-item'; // No completed class since these are active tasks
-        li.dataset.taskId = task.id; // Store the task ID for later reference
+    // Helper function to create a DOM element with attributes
+    function createElement(tag, className, attributes = {}) {
+        const element = document.createElement(tag);
+        if (className) element.className = className;
         
-        // Create the checkbox
-        const checkbox = document.createElement('input');
-        checkbox.type = 'checkbox';
-        checkbox.className = 'task-checkbox';
-        checkbox.checked = false; // Active tasks are always unchecked
+        Object.entries(attributes).forEach(([key, value]) => {
+            if (key === 'textContent' || key === 'innerHTML' || key === 'checked') {
+                element[key] = value;
+            } else {
+                element.setAttribute(key, value);
+            }
+        });
         
-        // Create the text span
-        const textSpan = document.createElement('span');
-        textSpan.className = 'task-text';
-        textSpan.textContent = task.text;
-        
-        // Create the edit button with pencil icon
-        const editButton = document.createElement('button');
-        editButton.className = 'edit-button';
-        editButton.innerHTML = '✏️'; // Pencil emoji icon
-        editButton.setAttribute('aria-label', `Edit task: ${task.text}`);
-        editButton.setAttribute('title', 'Edit task'); // Tooltip on hover
-        
-        // Create the delete button with trashcan icon
-        const deleteButton = document.createElement('button');
-        deleteButton.className = 'delete-button';
-        deleteButton.innerHTML = '🗑️'; // Trashcan emoji icon
-        deleteButton.setAttribute('aria-label', `Delete task: ${task.text}`);
-        deleteButton.setAttribute('title', 'Delete task'); // Tooltip on hover
-        
-        // Assemble all the pieces
-        li.appendChild(checkbox);
-        li.appendChild(textSpan);
-        li.appendChild(editButton);
-        li.appendChild(deleteButton);
-        
-        return li;
+        return element;
     }
     
-    // Create the HTML element for a completed task
-    function createCompletedTaskElement(task) {
-        // Create the main list item element
-        const li = document.createElement('li');
-        li.className = 'completed-task-item';
-        li.dataset.taskId = task.id; // Store the task ID for later reference
+    // Helper function to create a button with icon and accessibility attributes
+    function createButton(className, icon, ariaLabel, title) {
+        return createElement('button', className, {
+            innerHTML: icon,
+            'aria-label': ariaLabel,
+            title: title
+        });
+    }
+    
+    // Unified function to create task elements (both active and completed)
+    function createTaskElement(task, isCompleted = false) {
+        // Configuration based on task state
+        const config = {
+            containerClass: isCompleted ? CSS_CLASSES.COMPLETED_TASK_ITEM : CSS_CLASSES.TASK_ITEM,
+            checkboxChecked: isCompleted,
+            showEditButton: !isCompleted,
+            deleteAriaPrefix: isCompleted ? 'Delete completed task' : 'Delete task'
+        };
         
-        // Create the checkbox (checked and disabled to show it's completed)
-        const checkbox = document.createElement('input');
-        checkbox.type = 'checkbox';
-        checkbox.className = 'task-checkbox';
-        checkbox.checked = true;
+        // Create the main container
+        const li = createElement('li', config.containerClass, {
+            'data-task-id': task.id
+        });
         
-        // Create the text span
-        const textSpan = document.createElement('span');
-        textSpan.className = 'task-text';
-        textSpan.textContent = task.text;
+        // Create checkbox
+        const checkbox = createElement('input', CSS_CLASSES.TASK_CHECKBOX, {
+            type: 'checkbox',
+            checked: config.checkboxChecked
+        });
         
-        // Create the delete button with trashcan icon
-        const deleteButton = document.createElement('button');
-        deleteButton.className = 'delete-button';
-        deleteButton.innerHTML = '🗑️'; // Trashcan emoji icon
-        deleteButton.setAttribute('aria-label', `Delete completed task: ${task.text}`);
-        deleteButton.setAttribute('title', 'Delete task'); // Tooltip on hover
+        // Create text span
+        const textSpan = createElement('span', CSS_CLASSES.TASK_TEXT, {
+            textContent: task.text
+        });
         
-        // Assemble all the pieces
+        // Assemble basic elements
         li.appendChild(checkbox);
         li.appendChild(textSpan);
+        
+        // Add edit button only for active tasks
+        if (config.showEditButton) {
+            const editButton = createButton(
+                CSS_CLASSES.EDIT_BUTTON,
+                ICONS.EDIT,
+                `Edit task: ${task.text}`,
+                'Edit task'
+            );
+            li.appendChild(editButton);
+        }
+        
+        // Add delete button
+        const deleteButton = createButton(
+            CSS_CLASSES.DELETE_BUTTON,
+            ICONS.DELETE,
+            `${config.deleteAriaPrefix}: ${task.text}`,
+            'Delete task'
+        );
         li.appendChild(deleteButton);
         
         return li;
@@ -287,7 +313,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function saveTasksToStorage() {
         try {
             // Convert our tasks array to JSON and save it
-            localStorage.setItem('todoTasks', JSON.stringify(tasks));
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
         } catch (error) {
             // If saving fails (storage full, etc.), log the error
             console.error('Failed to save tasks to localStorage:', error);
@@ -298,7 +324,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function loadTasksFromStorage() {
         try {
             // Get the saved tasks from localStorage
-            const savedTasks = localStorage.getItem('todoTasks');
+            const savedTasks = localStorage.getItem(STORAGE_KEY);
             
             // If we found saved tasks, parse them and use them
             if (savedTasks) {
@@ -325,9 +351,9 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!task) return;
         
         // Get the text span and hide it
-        const textSpan = taskItem.querySelector('.task-text');
-        const editButton = taskItem.querySelector('.edit-button');
-        const deleteButton = taskItem.querySelector('.delete-button');
+        const textSpan = taskItem.querySelector(`.${CSS_CLASSES.TASK_TEXT}`);
+        const editButton = taskItem.querySelector(`.${CSS_CLASSES.EDIT_BUTTON}`);
+        const deleteButton = taskItem.querySelector(`.${CSS_CLASSES.DELETE_BUTTON}`);
         
         // Hide the original text and buttons
         textSpan.style.display = 'none';
@@ -335,22 +361,26 @@ document.addEventListener('DOMContentLoaded', function() {
         deleteButton.style.display = 'none';
         
         // Create the edit input
-        const editInput = document.createElement('input');
-        editInput.type = 'text';
-        editInput.className = 'edit-input';
-        editInput.value = task.text;
+        const editInput = createElement('input', CSS_CLASSES.EDIT_INPUT, {
+            type: 'text',
+            value: task.text
+        });
         
         // Create save button
-        const saveButton = document.createElement('button');
-        saveButton.className = 'save-edit-button';
-        saveButton.innerHTML = '✅'; // Checkmark emoji
-        saveButton.setAttribute('title', 'Save changes');
+        const saveButton = createButton(
+            CSS_CLASSES.SAVE_EDIT_BUTTON,
+            ICONS.SAVE,
+            'Save changes',
+            'Save changes'
+        );
         
         // Create cancel button
-        const cancelButton = document.createElement('button');
-        cancelButton.className = 'cancel-edit-button';
-        cancelButton.innerHTML = '❌'; // X emoji
-        cancelButton.setAttribute('title', 'Cancel edit');
+        const cancelButton = createButton(
+            CSS_CLASSES.CANCEL_EDIT_BUTTON,
+            ICONS.CANCEL,
+            'Cancel edit',
+            'Cancel edit'
+        );
         
         // Insert the edit elements after the text span
         textSpan.parentNode.insertBefore(editInput, editButton);
@@ -376,7 +406,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Save the edited task
     function saveTaskEdit(taskItem, taskId) {
         // Get the edit input value
-        const editInput = taskItem.querySelector('.edit-input');
+        const editInput = taskItem.querySelector(`.${CSS_CLASSES.EDIT_INPUT}`);
         const newText = editInput.value.trim();
         
         // Don't save if the text is empty
