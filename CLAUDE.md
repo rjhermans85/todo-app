@@ -125,6 +125,33 @@ This project is designed as a **learning experience for a beginner developer**. 
 - **Provide learning context: why this approach, what alternatives exist, what to learn next**
 - **Offer guidance on best practices and common patterns**
 
+## Deployment
+
+### Current Setup
+This project uses **automated GitHub Actions deployment** to GitHub Pages.
+
+### Deployment Process
+1. **Automatic**: Push to `main` branch triggers deployment
+2. **Manual**: Use GitHub UI workflow dispatch if needed
+3. **Pipeline**: Located at `.github/workflows/deploy.yml`
+4. **URL**: https://rjhermans85.github.io/todo-app/
+
+### To Deploy Changes:
+```bash
+# After committing changes to main branch:
+git push origin main
+```
+
+The GitHub Actions pipeline will automatically:
+- Validate HTML/CSS files
+- Run basic functionality tests
+- Deploy to GitHub Pages
+- Deployment typically takes 1-2 minutes
+
+### Check Deployment Status:
+- Actions tab: https://github.com/rjhermans85/todo-app/actions
+- Live site: https://rjhermans85.github.io/todo-app/
+
 ## Project Files
 
 - `0_vision.md` - Contains the complete project vision, user profiles, success metrics, and requirements. Read this file to understand the project goals and user needs before making any implementation decisions.
